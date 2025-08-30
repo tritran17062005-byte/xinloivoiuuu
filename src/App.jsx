@@ -25,20 +25,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-/**
- * 🧸 HƯỚNG DẪN NHANH
- * - Bỏ file nhạc "music.mp3" vào thư mục public/
- * - Sửa tên người yêu ở biến defaultPartnerName.
- * - Thay đổi màu bằng các class tailwind (bg-pink-50, text-pink-600...).
- * - Sửa danh sách lý do & cam kết ở mảng reasons và promises.
- */
-
-const defaultPartnerName = "Vợ iuuu";
+const defaultPartnerName = "Em";
 
 const reasons = [
   {
     icon: <Heart className="w-5 h-5" />,
-    title: "Vì chồng yêuu vợ",
+    title: "Vì anh thật lòng",
     text: "Chồng xin lỗi vì đã làm vợ buồn. Chồng biết mình đã nói câu đó là không thể chấp nhận được.",
   },
   {
@@ -58,13 +50,9 @@ const reasons = [
   },
 ];
 
-const promises = [
-  "Lắng nghe đến hết lời, không cắt ngang.",
-  "Nói rõ cảm xúc, không im lặng kéo dài.",
-  "Nghe lời vợ và k làm trái ý vợ.",
+hônggg làm trái ý vợ..",
 ];
 
-// hook lấy kích thước cửa sổ
 function useWindowSize() {
   const [size, setSize] = useState({ width: 0, height: 0 });
   useEffect(() => {
@@ -78,64 +66,49 @@ function useWindowSize() {
   return size;
 }
 
-// nhạc nền auto play loop
-function BackgroundMusic() {
-  const audioRef = useRef(null);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {
-        console.log("Autoplay bị chặn, cần click mới phát nhạc.");
-      });
-    }
-  }, []);
-
-  return <audio ref={audioRef} src="/music.mp3" autoPlay loop />;
-}
-
-// mưa tim liên tục
-function HeartRain() {
+function HeartBurst({ show }) {
   const { width, height } = useWindowSize();
-  const [hearts, setHearts] = useState([]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const id = Date.now() + Math.random();
-      setHearts((prev) => [
-        ...prev,
-        {
-          id,
-          x: Math.random() * width,
-          y: -20,
-          size: 16 + Math.random() * 24,
-        },
-      ]);
-      setTimeout(() => {
-        setHearts((prev) => prev.filter((h) => h.id !== id));
-      }, 4000);
-    }, 400); // tốc độ mưa tim
-    return () => clearInterval(interval);
-  }, [width]);
-
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 36 }).map((_, i) => ({
+        id: i,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        a: Math.random() * 360,
+      })),
+    [show, width, height]
+  );
   return (
-    <div className="pointer-events-none fixed inset-0 overflow-hidden">
-      <AnimatePresence>
-        {hearts.map((h) => (
-          <motion.div
-            key={h.id}
-            className="absolute text-pink-500"
-            initial={{ x: h.x, y: h.y, opacity: 1 }}
-            animate={{ y: height + 40, opacity: 0 }}
-            transition={{ duration: 4, ease: "easeIn" }}
-          >
-            <Heart
-              className="w-6 h-6"
-              style={{ width: h.size, height: h.size }}
-            />
-          </motion.div>
-        ))}
-      </AnimatePresence>
-    </div>
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          className="pointer-events-none fixed inset-0 overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {particles.map((p) => (
+            <motion.div
+              key={p.id}
+              className="absolute text-pink-500"
+              initial={{ x: p.x, y: p.y, rotate: 0, opacity: 0.9 }}
+              animate={{
+                y: p.y - (80 + Math.random() * 160),
+                x: p.x + (Math.random() * 200 - 100),
+                rotate: p.a + 180,
+                opacity: 0,
+              }}
+              transition={{
+                duration: 1.2 + Math.random() * 0.8,
+                ease: "easeOut",
+              }}
+            >
+              <Heart className="w-6 h-6" />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -144,6 +117,7 @@ export default function ApologyPage() {
   const [message, setMessage] = useState(
     "Vợ ơi, cho chồng xin lỗi vì đã làm vợ buồn. Chồng thương vợ nhiều lắm và muốn sửa sai ngay từ hôm nay. Chồng hứa sẽ không vô tâm và nói hay làm những điều làm vợ tổn thương ạ. Cho chồng cơ hội được bù đắp nhé? 🥺❤️"
   );
+  const [burst, setBurst] = useState(false);
   const [hoverDeny, setHoverDeny] = useState(false);
   const denyRef = useRef(null);
 
@@ -157,34 +131,23 @@ export default function ApologyPage() {
 
   return (
     <div className="min-h-screen bg-pink-50 text-pink-900 flex items-center justify-center p-4 relative">
-      <BackgroundMusic />
-      <HeartRain />
+      <HeartBurst show={burst} />
+      {/* Nhạc YouTube auto play */}
+      <iframe
+        width="0"
+        height="0"
+        src="https://www.youtube.com/embed/0t_rPk8S7m4?autoplay=1&loop=1&playlist=0t_rPk8S7m4"
+        title="Hơn Cả Yêu - Đức Phúc"
+        frameBorder="0"
+        allow="autoplay"
+        className="absolute"
+      ></iframe>
 
-      <div className="w-full max-w-3xl relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <Card className="border-pink-200 shadow-lg">
-            <CardHeader className="text-center">
-              <div className="flex items-center justify-center gap-2 text-pink-600">
-                <PartyPopper className="w-5 h-5" />
-                <Badge
-                  variant="secondary"
-                  className="bg-pink-100 text-pink-600"
-                >
-                  xin lỗi chân thành
-                </Badge>
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <CardTitle className="text-3xl md:text-4xl font-bold mt-2">
-                {partnerName} ơi, đừng giận chồng nữa nha ❤️
+      <div className="w-full max-w-3xl">
+        <motion.chồng nữa nha ❤️
               </CardTitle>
             </CardHeader>
-
             <CardContent className="space-y-6">
-              {/* nhập tên */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="md:col-span-2">
                   <label className="block text-sm mb-1">Tên người yêu</label>
@@ -195,9 +158,19 @@ export default function ApologyPage() {
                     placeholder="Nhập tên (Em/Anh/My/Hà/...)"
                   />
                 </div>
+                <div className="flex items-end">
+                  <Button
+                    onClick={() => {
+                      setBurst(false);
+                      setTimeout(() => setBurst(true), 10);
+                    }}
+                    className="w-full"
+                  >
+                    <HandHeart className="w-4 h-4 mr-2" /> Xuất hiện trái tim
+                  </Button>
+                </div>
               </div>
 
-              {/* lý do */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {reasons.map((r, i) => (
                   <motion.div
@@ -221,7 +194,6 @@ export default function ApologyPage() {
                 ))}
               </div>
 
-              {/* cam kết */}
               <div className="bg-white/80 rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-2 text-pink-700">
                   <Calendar className="w-4 h-4" />
@@ -240,7 +212,6 @@ export default function ApologyPage() {
                 </ul>
               </div>
 
-              {/* lời nhắn */}
               <div>
                 <label className="block text-sm mb-1">
                   Lời nhắn gửi {partnerName}
@@ -253,7 +224,7 @@ export default function ApologyPage() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button>
+                      <Button className="">
                         <Heart className="w-4 h-4 mr-2" /> Gửi lời xin lỗi
                       </Button>
                     </DialogTrigger>
@@ -267,7 +238,6 @@ export default function ApologyPage() {
                       </div>
                     </DialogContent>
                   </Dialog>
-
                   <Button
                     variant="secondary"
                     onMouseEnter={() => setHoverDeny(true)}
@@ -276,8 +246,13 @@ export default function ApologyPage() {
                   >
                     Vẫn còn giận 😤
                   </Button>
-
-                  <Button variant="outline">
+                  <Button
+                    onClick={() => {
+                      setBurst(false);
+                      setTimeout(() => setBurst(true), 10);
+                    }}
+                    variant="outline"
+                  >
                     <Laugh className="w-4 h-4 mr-2" /> Cho một cái cười đi ạaa
                   </Button>
                 </div>
@@ -287,7 +262,14 @@ export default function ApologyPage() {
                 Nếu em tha thứ, nhấn nút này nè ↓
               </p>
               <div className="flex justify-center">
-                <Button size="lg" className="text-base px-6 py-6">
+                <Button
+                  size="lg"
+                  className="text-base px-6 py-6"
+                  onClick={() => {
+                    setBurst(false);
+                    setTimeout(() => setBurst(true), 10);
+                  }}
+                >
                   <Heart className="w-5 h-5 mr-2" /> Vợ tha thứ cho chồng 💖
                 </Button>
               </div>
@@ -299,17 +281,5 @@ export default function ApologyPage() {
         </div>
       </div>
     </div>
-    <div className="mt-6 flex justify-center">
-  <iframe
-    width="0"
-    height="0"
-    src="https://www.youtube.com/embed/0t_rPk8S7m4?autoplay=1&loop=1&playlist=0t_rPk8S7m4"
-    title="Hơn Cả Yêu - Đức Phúc"
-    frameBorder="0"
-    allow="autoplay"
-  ></iframe>
-</div>
   );
 }
-
-
