@@ -142,7 +142,7 @@ function HeartRain() {
 export default function ApologyPage() {
   const [partnerName, setPartnerName] = useState(defaultPartnerName);
   const [message, setMessage] = useState(
-    "Vợ ơi, cho chồng xin lỗi vì đã làm em buồn. Chồng thương em nhiều lắm và muốn sửa sai ngay từ hôm nay. Cho chồng cơ hội được bù đắp nhé? 🥺❤️"
+    "Vợ ơi, cho chồng xin lỗi vì đã làm vợ buồn. Chồng thương vợ nhiều lắm và muốn sửa sai ngay từ hôm nay. Chồng hứa sẽ không vô tâm và nói hay làm những điều làm vợ tổn thương ạ. Cho chồng cơ hội được bù đắp nhé? 🥺❤️"
   );
   const [hoverDeny, setHoverDeny] = useState(false);
   const denyRef = useRef(null);
@@ -179,7 +179,7 @@ export default function ApologyPage() {
                 <Sparkles className="w-5 h-5" />
               </div>
               <CardTitle className="text-3xl md:text-4xl font-bold mt-2">
-                {partnerName} ơi, đừng giận anh nữa nha ❤️
+                {partnerName} ơi, đừng giận chồng nữa nha ❤️
               </CardTitle>
             </CardHeader>
 
@@ -301,3 +301,4 @@ export default function ApologyPage() {
     </div>
   );
 }
+
